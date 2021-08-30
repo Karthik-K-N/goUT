@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 
 	"goUT/client/mock"
 
-	//adding this empty import to enable go.mod to download mockgen
+	//adding this silent import to enable go.mod to download mockgen
 	_ "github.com/golang/mock/mockgen/model"
 )
 
@@ -61,30 +62,30 @@ func TestProcessInputTabularMethod(t *testing.T) {
 	}
 }
 
-func TestProcessInputCustomMethods(t *testing.T)  {
-	myVariable := testStruct{}
-	res, err := processInput(myVariable, 1,2)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if res != 3{
-		t.Fatalf("Expected result %d got %d", 3, res)
-	}
-}
-
 type testStruct struct {
 
 }
 
 func (input testStruct) GetSum( num1, num2 int) (int, error) {
-	return 1, nil
+	return 0, fmt.Errorf(" Intentional error ")
+}
+
+func TestProcessInputCustomMethods(t *testing.T)  {
+	myVariable := testStruct{}
+	res, err := processInput(myVariable, 1,2)
+	if err == nil {
+		t.Fatal("Expecting error! got nil")
+	}
+	if res != 0{
+		t.Fatalf("Expected 0 found %d", res)
+	}
 }
 
 func TestProcessInputMocks(t *testing.T){
 	mockCtrl := gomock.NewController(t)
 	mockClient := mock.NewMockClient(mockCtrl)
 
-	//mockClient.EXPECT().GetSum(11,2).Return(3, nil)
+	mockClient.EXPECT().GetSum(11,2).Return(3, nil)
 	//mockClient.EXPECT().GetSum(gomock.Any(),gomock.Any()).Return(3, fmt.Errorf("Intention Error "))
 	//mockClient.EXPECT().GetSum(1,2).Return(33, nil)
 	//mockClient.EXPECT().GetSum(1,2).Return(3, nil).Times(2)
@@ -96,5 +97,4 @@ func TestProcessInputMocks(t *testing.T){
 	if res != 3{
 		t.Fatalf("Expected result %d got %d", 3, res)
 	}
-
 }
