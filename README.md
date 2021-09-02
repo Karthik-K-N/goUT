@@ -20,22 +20,24 @@ go test ./...
 
 - Add the silent import in the file
 
-
+```bash
      _ "github.com/golang/mock/mockgen/model"
+```
 - Download the mockgen package into vendor folder
 
-
+```bash
     go mod vendor
-
+```
 - Add the mockgen command to the interface
 
-
+```bash
     //go:generate go run ../vendor/github.com/golang/mock/mockgen -source=./client.go -destination=./mock/client_generated.go -package=mock
     type Client interface {
       GetSum(int, int) (int, error)
     }
-
+```
 - Generate the mock methods
 
-
+```bash
     go generate ./...
+```
